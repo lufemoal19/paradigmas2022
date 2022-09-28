@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<!--
+* Fake page
+@author loricarlos@gmail.com
+@version demo
+-->
+<html>
+    <header>
+        <script type="module">
+            import {get_persons} from "./js/services.js" ;
+            import {getPersonsById} from "./js/services.js" ;
+            import {getPersonsBySelection} from "./js/services.js" ;
+            const PERSONS_TAG = 'persons'
+            const BUTTONS_TAG = 'button_persons'
+            const DEFAULT_URI = '/persons'
+
+            /* crea el objeto queryOption que se pasa en la funcion getPersonsBySelection */
+            function createQueryOption(age, gender)
+            {
+                let queryOption = {ageRange: null, gender: null};
+
+                if(age === "child")
+                {
+                    queryOption.ageRange = {min: 0, max: 11};
+                }
+                if(age === "teenager")
+                {
+                    queryOption.ageRange = {min: 12, max: 20};
+                }
+                if(age === "adult")
+                {
+                    queryOption.ageRange = {min: 21, max: 64};
+                }
+                if(age === "senior")
+                {
+                    queryOption.ageRange = {min: 64, max: 100};
+                }
+
+                if(gender === "male")
+                {
+                    queryOption.gender = "M"
+                }
+                if(gender === "female")
+                {
+                    queryOption.gender = "F"
+                }
+
+                return queryOption;
+            }
+            
+            /* funcion que pone los datos de las personas en la table */
+            function addPersonsToTable(personsList){
+                let table = document.getElementById('persons');
+                personsList.forEach(element => {
+                    let row = table.insertRow(0)
+                    let id = row.insertCell(0)
+                    id.innerHTML = element.id 
+                    let fn = row.insertCell(1)
+                    fn.innerHTML = element.firstname
+                    let ln = row.insertCell(2)
+                    ln.innerHTML = element.lastname
+                    let age = row.insertCell(3)
+                    age.innerHTML = element.age
+                    let gender = row.insertCell(4)
+                    gender.innerHTML = element.gender
+                });
+            }
+
+            function cleanScreen()
+            {
+                let table = document.getElementById('persons');
+                if(table.rows.length != 0)
+                {
+                    table.innerHTML = "";
+                }
+            }
+
+            /* funcion que hace los requests al service para obtener las listas de las personas */
+            function view_persons(URI = DEFAULT_URI){
+                const persons_tag = document.getElementById(PERSONS_TAG);
+                const id = document.getElementById("id");
+                const genders = document.getElementById("genders");
+                const age = document.getElementById("age");
+
+                cleanScreen();
+
+                //busqueda por id
+                if(id.value !== "00")
+                {
+                    
+                    getPersonsById(URI,id.value).then(persons =>  addPersonsToTable(JSON.parse(persons)) )
+                                .catch( err => alert(err) )
+                }
+                else
+                {
+                    //busqueda general o por genero y edad
+                    const queryOption = createQueryOption(age.value, genders.value);
+                    getPersonsBySelection(URI, queryOption).then(persons =>  addPersonsToTable(JSON.parse(persons)) )
+                                .catch( err => alert(err) )
+                }
+                
+            }
+            // Bind button
+            const button_tag = document.getElementById(BUTTONS_TAG)
+            button_tag.addEventListener('click', view_persons, false)
+        </script>
+        
+    </header>
+    <body>
+        <h1>Fake Index Page</h1>
+        <h2>Persons Application</h2>
+        <button id="button_persons">Click to view Persons</button>
+        <div id="idblock" name="idblock">
+            <label for="id">Id</label>
+            <input type="number" id="id" name="id" value="00" min="00" size="2" style="width: 2em;">
+        <div>
+        <div id="controls" name="controls">
+            <select name="genders" id="genders">
+                <option value="all">All</option>
+                <option value="male">Male</option>
+                <option value="female">Female</option>
+            </select>
+            
+            <select name="age" id="age">
+                <option value="all">All</option>
+                <option value="child">Child(&lt; 11)</option>
+                <option value="teenager">Tenager(12-20)</option>
+                <option value="adult">Adult(21-64)</option>
+                <option value="senior">Senior(&gt; 64)</option>
+                
+            </select>
+            <table id="persons">
+                <tr>
+                    <th>Id</th>
+                    <th>First name</th>
+                    <th>Last name</th>
+                    <th>Age</th>
+                    <th>Gender</th>
+                </tr>
+                
+            </table>
+        </div>
+    </body>
+</html>
