@@ -75,7 +75,7 @@ const filter_id = (person, _id) =>  person.id == _id
 
 const age = (person, age_range) =>  person.age >= age_range.min && person.age <= age_range.max
 
-const gender = (person,_gender) => person.gender === _gender
+const gender = (person, _gender) => person.gender === _gender
 
 // Obj builder
 const obj_builder = list => new Promise(
