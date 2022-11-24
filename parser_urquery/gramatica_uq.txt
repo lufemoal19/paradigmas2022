@@ -1,0 +1,82 @@
+* EIF400 II-2022
+* Proyecto UrQuery Sprint 2
+* loriacarlos@gmail.com
+* Gramática de UrQuery 
+* version 0.1
+* Reglas:
+
+    progUrQuery -> letprog | urQuery;
+    
+    letprog -> 'let' identifier '=' expr in urQuery
+
+    urQuery   -> tagquery;
+    
+    tagquery -> "<" tag ">" "{" forquery "}" "</" tag ">" ;
+    
+    forquery -> "for" qvar "in" exprquery "return" varquery ;
+
+    exprquery -> sourcequery ( startxpath )? ;
+
+    sourcequery -> docpath | qvar;
+
+    docpath -> "doc" "(" expr ")" 
+
+    varquery -> vartag | varpath;
+
+    vartag -> "<" tag ">" "{" varpath "}" "</" tag ">" ;
+
+    varpath -> qvar (startxpath)?;
+
+    startxpath -> "/" xpath;
+
+    xpath -> tag | xpath '/' tag;
+
+    expr -> identifier | string | '.'
+    
+    qvar  -> '$'identifier;
+    
+    tag  -> xml_unqualified_identifier;
+    
+    identifier -> javascript_identifier;
+    
+    string -> javascript_string;
+
+*Ejemplo de referencia:
+Script de UrQuery
+let uri = '.' in 
+    <ul>
+       for $li in doc(uri)/li 
+           return <li>{$li}</li>
+    </ul>
+    
+* Ejemplo de posible esquema de Compilación en Javascript
+* Asume un módulo de soporte urquery.mjs con funciones que operan contra el DOM
+* 
+// Se importa el modulo de soporte
+import {ur_doc, ur_evaluate, ur_tag, ur_active_doc} from './urquery.mjs'  
+// Se crea una funcion para el programa. Esta es el query
+function urQuery_01(uri){
+    
+    const ul_tag = children => ur_tag('ul', children) // una que  lambda abstrae el ul
+    function* for_01(uri){ // se crea un generador para el for
+        const xpathResultIter = ur_evaluate(ur_doc(uri), '/li')
+        const li_tag = child => ur_tag('li', child) // una que  lambda abstrae el li 
+        for (li of xpathResultIter){
+           yield li_ag(li)
+        }
+    }
+    return ul_tag([...for_01(uri)])    
+}
+// Se crea una funcion main que representa el let y el query
+function main(){
+    let uri = ur_active_doc() // '.' es el documento activo
+    return urQuery_01(uri)    //  se llama al programa
+}
+
+
+
+
+
+
+
+

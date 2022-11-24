@@ -1,0 +1,8 @@
+
+// https://developer.mozilla.org/en-US/docs/Web/XPath/Introduction_to_using_XPath_in_JavaScript
+
+res = document.evaluate('//p', document, null, XPathResult.UNORDERED_NODE_ITERATOR_TYPE, null).iterateNext()
+
+
+res = document.evaluate('//script', document, null, XPathResult.UNORDERED_NODE_ITERATOR_TYPE, null).iterateNext()
+
